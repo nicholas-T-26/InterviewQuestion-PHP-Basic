@@ -1,0 +1,52 @@
+-- MySQL-compatible single SQL statement
+WITH update_job AS (
+    -- Task a: Insert new job assignment for employee_no 1002
+    INSERT INTO employee_job_table (employee_id, job_id, effective_date)
+    SELECT e.employee_id, 4, '2020-01-01'
+    FROM employee_profile_table e
+    WHERE e.employee_no = '1002'
+),
+delete_job AS (
+    -- Task d: Delete job assignment for employee_no 1000 with effective date 2020-01-01
+    DELETE ej
+    FROM employee_job_table ej
+    INNER JOIN employee_profile_table e ON ej.employee_id = e.employee_id
+    WHERE e.employee_no = '1000' AND ej.effective_date = '2020-01-01'
+),
+all_jobs AS (
+    -- Task b: List employee name, employee_no, effective_date, and job title
+    SELECT 
+        e.employee_name,
+        e.employee_no,
+        ej.effective_date,
+        j.job_name,
+        'all_jobs' AS query_type
+    FROM employee_profile_table e
+    INNER JOIN employee_job_table ej ON e.employee_id = ej.employee_id
+    INNER JOIN job_profile_table j ON ej.job_id = j.job_id
+),
+latest_jobs AS (
+    -- Task c: List employee name, employee_no, and latest job title
+    SELECT 
+        e.employee_name,
+        e.employee_no,
+        NULL AS effective_date,
+        j.job_name,
+        'latest_jobs' AS query_type
+    FROM employee_profile_table e
+    INNER JOIN (
+        SELECT 
+            ej.employee_id,
+            ej.job_id,
+            MAX(ej.effective_date) AS latest_date
+        FROM employee_job_table ej
+        GROUP BY ej.employee_id
+    ) latest ON e.employee_id = latest.employee_id
+    INNER JOIN job_profile_table j ON latest.job_id = j.job_id
+)
+SELECT employee_name, employee_no, effective_date, job_name
+FROM all_jobs
+UNION
+SELECT employee_name, employee_no, effective_date, job_name
+FROM latest_jobs
+ORDER BY employee_no, effective_date DESC;
