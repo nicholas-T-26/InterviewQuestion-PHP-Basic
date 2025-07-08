@@ -1,4 +1,3 @@
--- MySQL-compatible single SQL statement
 WITH update_job AS (
     -- Task a: Insert new job assignment for employee_no 1002
     INSERT INTO employee_job_table (employee_id, job_id, effective_date)
