@@ -5,13 +5,7 @@ WITH update_job AS (
     FROM employee_profile_table e
     WHERE e.employee_no = '1002'
 ),
-delete_job AS (
-    -- Task d: Delete job assignment for employee_no 1000 with effective date 2020-01-01
-    DELETE ej
-    FROM employee_job_table ej
-    INNER JOIN employee_profile_table e ON ej.employee_id = e.employee_id
-    WHERE e.employee_no = '1000' AND ej.effective_date = '2020-01-01'
-),
+
 all_jobs AS (
     -- Task b: List employee name, employee_no, effective_date, and job title
     SELECT 
@@ -43,6 +37,15 @@ latest_jobs AS (
     ) latest ON e.employee_id = latest.employee_id
     INNER JOIN job_profile_table j ON latest.job_id = j.job_id
 )
+
+delete_job AS (
+    -- Task d: Delete job assignment for employee_no 1000 with effective date 2020-01-01
+    DELETE ej
+    FROM employee_job_table ej
+    INNER JOIN employee_profile_table e ON ej.employee_id = e.employee_id
+    WHERE e.employee_no = '1000' AND ej.effective_date = '2020-01-01'
+),
+
 SELECT employee_name, employee_no, effective_date, job_name
 FROM all_jobs
 UNION
